@@ -8,6 +8,7 @@ module System.TokenHistory.Types
 import Data.Aeson ((.=))
 import qualified Data.Aeson as A
 import qualified Data.Text as T
+import qualified Data.Time as D
 
 newtype SHA =
     MkSHA T.Text
@@ -20,6 +21,7 @@ data Branch
 
 data GitLine = GitLine
     { gSHA :: SHA
+    , gDate :: D.Day
     , gBranch :: Branch
     , gCommitMessage :: T.Text
     } deriving (Show, Eq)
@@ -28,6 +30,7 @@ instance A.ToJSON GitLine where
     toJSON gl =
         A.object
             [ "sha" .= A.String (extractSHA (gSHA gl))
+            , "date" .= A.toJSON (gDate gl)
             , "branch" .= A.toJSON (gBranch gl)
             , "commitMessage" .= A.String (gCommitMessage gl)
             ]

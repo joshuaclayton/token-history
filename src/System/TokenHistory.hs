@@ -20,5 +20,5 @@ readGit token =
     T.strip . T.pack <$>
     Process.readProcess
         "git"
-        ["log", "-G", T.unpack token, "--pretty=format:%h %d %s"]
+        ["log", "-G", T.unpack token, "--pretty=format:%h %as %d %s"]
         []
