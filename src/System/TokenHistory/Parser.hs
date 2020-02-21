@@ -22,9 +22,20 @@ parseInput =
 
 gitLineParser :: Parser GitLine
 gitLineParser =
-    GitLine <$> (shaParser <* M.space) <*> (dayParser <* M.space) <*>
+    GitLine <$> (nameParser <* M.newline) <*> (emailParser <* M.newline) <*>
+    (shaParser <* M.space) <*>
+    (dayParser <* M.space) <*>
     (branchParser <* M.space) <*>
     commitMessageParser
+
+nameParser :: Parser T.Text
+nameParser = untilParser '\n'
+
+emailParser :: Parser T.Text
+emailParser = untilParser '\n'
+
+untilParser :: Char -> Parser T.Text
+untilParser c = M.takeWhileP Nothing (not . (==) c)
 
 shaParser :: Parser SHA
 shaParser = MkSHA . T.pack <$> M.some M.hexDigitChar

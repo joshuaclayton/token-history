@@ -20,7 +20,9 @@ data Branch
     deriving (Show, Eq)
 
 data GitLine = GitLine
-    { gSHA :: SHA
+    { gAuthorName :: T.Text
+    , gAuthorEmail :: T.Text
+    , gSHA :: SHA
     , gDate :: D.Day
     , gBranch :: Branch
     , gCommitMessage :: T.Text
@@ -30,6 +32,8 @@ instance A.ToJSON GitLine where
     toJSON gl =
         A.object
             [ "sha" .= A.String (extractSHA (gSHA gl))
+            , "authorName" .= A.String (gAuthorName gl)
+            , "authorEmail" .= A.String (gAuthorEmail gl)
             , "date" .= A.toJSON (gDate gl)
             , "branch" .= A.toJSON (gBranch gl)
             , "commitMessage" .= A.String (gCommitMessage gl)
