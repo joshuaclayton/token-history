@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Aeson ((.=))
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Text as T
@@ -14,13 +15,22 @@ newtype Options =
 optionsToToken :: Options -> T.Text
 optionsToToken (MkOptions v) = v
 
+data TokenResults =
+    TokenResults T.Text
+                 [TokenHistory.GitLine]
+
+instance A.ToJSON TokenResults where
+    toJSON (TokenResults token results) =
+        A.object ["token" .= token, "results" .= A.toJSON results]
+
 main :: MonadIO m => m ()
 main = runProgram =<< parseCLI
 
 runProgram :: MonadIO m => Options -> m ()
 runProgram (MkOptions v) =
     liftIO $
-    either T.putStrLn (BS.putStr . A.encode) =<< TokenHistory.processTokens v
+    either T.putStrLn (BS.putStr . A.encode . TokenResults v) =<<
+    TokenHistory.processTokens v
 
 parseCLI :: MonadIO m => m Options
 parseCLI =
